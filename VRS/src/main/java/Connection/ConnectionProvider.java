@@ -8,7 +8,7 @@ import java.sql.DriverManager;
 
 /**
  *
- * @author skyli
+ * 
  */
 public class ConnectionProvider {
     public static Connection getCon()
@@ -16,7 +16,7 @@ public class ConnectionProvider {
         try {
             {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/vrs?zeroDateTimeBehavior=convertToNull","root","12345");
+                Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/vrs?zeroDateTimeBehavior=convertToNull","root","2675");
                 return con;
             }
         } catch (Exception e) {

@@ -55,6 +55,11 @@ public class NewMovie extends javax.swing.JFrame {
         jLabel5.setText("Rating");
 
         jButton1.setText("Save");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Exit");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -130,6 +135,27 @@ public class NewMovie extends javax.swing.JFrame {
         // TODO add your handling code here:
         setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String movieID=jTextField1.getText();
+        String title=jTextField2.getText();
+        String genre=jTextField3.getText();
+        String director=jTextField4.getText();
+        String rating=jTextField5.getText();
+        try {
+            Connection con=ConnectionProvider.getCon();
+            Statement st=con.createStatement();
+            st.executeUpdate("insert into movies values('"+movieID+"','"+title+"','"+genre+"','"+director+"','"+rating+"')");
+            JOptionPane.showMessageDialog(null,"Successfully updated");
+            setVisible(false);
+            new NewMovie().setVisible(true);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,"Input Error");
+            setVisible(false);
+            new NewMovie().setVisible(true);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
