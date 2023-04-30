@@ -6,7 +6,10 @@ package VRS;
 
 import java.sql.*;
 import Connection.ConnectionProvider;
+import java.awt.event.KeyEvent;
+import static java.awt.event.KeyEvent.VK_ENTER;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author skyli
@@ -18,8 +21,14 @@ public class ReturnMovie extends javax.swing.JFrame {
      */
     public ReturnMovie() {
         initComponents();
+        fillTable();
     }
-
+    
+    Connection con;
+    PreparedStatement pst;
+    PreparedStatement pst1;
+    ResultSet rs;
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -35,21 +44,24 @@ public class ReturnMovie extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
+        txtuserID = new javax.swing.JTextField();
+        movieTitle = new javax.swing.JTextField();
+        txtDate = new javax.swing.JTextField();
+        txtelapsed = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jLabel5 = new javax.swing.JLabel();
+        txtFine = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("UserID");
+        jLabel1.setText("Movie Title");
 
-        jLabel2.setText("MovieID");
+        jLabel2.setText("UserID");
 
-        jLabel3.setText("Rent Date");
+        jLabel3.setText("Date");
 
-        jLabel4.setText("Return Date");
+        jLabel4.setText("Days Passed");
 
         jButton1.setText("Close");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -60,12 +72,26 @@ public class ReturnMovie extends javax.swing.JFrame {
 
         jButton2.setText("Return");
 
-        jButton3.setText("Search");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+        movieTitle.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                movieTitleKeyPressed(evt);
             }
         });
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        jLabel5.setText("Fine");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -77,20 +103,22 @@ public class ReturnMovie extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jLabel4)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel5))
                 .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
                         .addComponent(jButton1))
-                    .addComponent(jTextField4)
-                    .addComponent(jTextField3)
-                    .addComponent(jTextField2)
-                    .addComponent(jTextField1))
+                    .addComponent(txtelapsed)
+                    .addComponent(txtDate)
+                    .addComponent(movieTitle)
+                    .addComponent(txtuserID)
+                    .addComponent(txtFine))
                 .addGap(18, 18, 18)
-                .addComponent(jButton3)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(87, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -98,65 +126,128 @@ public class ReturnMovie extends javax.swing.JFrame {
                 .addGap(44, 44, 44)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(movieTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
+                        .addGap(30, 30, 30)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(txtuserID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24)
                         .addComponent(jLabel3))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addComponent(jButton3)))
+                        .addGap(73, 73, 73)
+                        .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtelapsed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5)
+                    .addComponent(txtFine, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
                     .addComponent(jButton1))
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addGap(49, 49, 49))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    public void fillTable() {
+        {                                         
         // TODO add your handling code here:
-        String userID=jTextField1.getText();
-        String movieID=jTextField2.getText();
-        try 
-        {
+        try {
             Connection con=ConnectionProvider.getCon();
             Statement st=con.createStatement();
-            ResultSet rs=st.executeQuery("select *from issue where movieID='"+movieID+"' and userID='"+userID+"'");
-            if(rs.next()){
-                jTextField3.setText(rs.getString(3));
-                jTextField4.setText(rs.getString(4));
-                jTextField1.setEditable(false);
-                jTextField2.setEditable(false);
-                
-            }
-            else
-                JOptionPane.showMessageDialog(null,"Incorrect User ID");
-                setVisible(false);
-                new ReturnMovie().setVisible(true);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null,"Connection Error");
+            String query="select * from returns";
+            st.executeQuery(query);
+            ResultSet rs= st.executeQuery(query);
+            ResultSetMetaData rsmd=rs.getMetaData();
+            DefaultTableModel model=(DefaultTableModel) jTable1.getModel();
+            
+            int cols=rsmd.getColumnCount();
+            String[] colName=new String[cols];
+            for(int i=0;i<cols;i++)
+                colName[i]=rsmd.getColumnName(i+1);
+            model.setColumnIdentifiers(colName);
+            String userID,movieID,returnDate,elapsed,fine;
+            while(rs.next()) {
+                userID=rs.getString(1);
+                movieID=rs.getString(2);
+                returnDate=rs.getString(3);
+                elapsed=rs.getString(4);
+                fine=rs.getString(5);
+                String[] row={userID,movieID,returnDate,elapsed,fine};
+                model.addRow(row);        
         }
-    }//GEN-LAST:event_jButton3ActionPerformed
-
+        st.close();
+        con.close();
+        } catch (Exception e) {
+        }
+    }
+    }
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         setVisible(false);
-        new Home().setVisible(true);
+        new Homepage().setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void movieTitleKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_movieTitleKeyPressed
+        // TODO add your handling code here:
+        
+        if(evt.getKeyCode()==KeyEvent.VK_ENTER)
+        {
+            String Title = movieTitle.getText();
+            
+            try {
+                Connection con=ConnectionProvider.getCon();
+                //String Title = movieTitle.getText();
+                    
+                    pst = con.prepareStatement("select userID,Fee,Due,DATEDIFF(NOW(),Due) as elapsed from rentals where Title =? ");
+                    pst.setString(1, Title);
+                    rs = pst.executeQuery();
+                
+                    if(rs.next()==false)
+                {
+                    JOptionPane.showMessageDialog(this,"Movie Title Not Found");
+                }
+                else
+                    {
+                        String username = rs.getString("userID");
+                        txtuserID.setText(username.trim());
+                        
+                        String date = rs.getString("Due");
+                        txtDate.setText(date.trim());
+                        
+                        String elp = rs.getString("elapsed");
+                        
+                        int elapsed = Integer.parseInt(elp);
+                        
+                        if(elapsed > 0)
+                        {
+                            txtelapsed.setText(elp);
+                            
+                            int fine = elapsed * 10;
+                            
+                            txtFine.setText(String.valueOf(fine));
+                        }
+                        else{
+                            txtelapsed.setText("0");
+                            txtFine.setText("0");
+                        }
+                    }
+            } catch (Exception e) {
+            }
+        }
+    }//GEN-LAST:event_movieTitleKeyPressed
 
     /**
      * @param args the command line arguments
@@ -196,14 +287,17 @@ public class ReturnMovie extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTextField movieTitle;
+    private javax.swing.JTextField txtDate;
+    private javax.swing.JTextField txtFine;
+    private javax.swing.JTextField txtelapsed;
+    private javax.swing.JTextField txtuserID;
     // End of variables declaration//GEN-END:variables
 }

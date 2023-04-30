@@ -6,6 +6,7 @@ package VRS;
 
 import java.sql.*;
 import Connection.ConnectionProvider;
+import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
 /**
@@ -19,7 +20,40 @@ public class RentMovie extends javax.swing.JFrame {
      */
     public RentMovie() {
         initComponents();
+        
+        LoadMovie();
+        txtdate.setDateFormatString("yyyy/MM/dd");
+        txtdue.setDateFormatString("yyyy/MM/dd");
+        
+        txtuserid.setEnabled(false);
+        txtcustname.setEnabled(false);
+        txtrental.setEnabled(false);
+        txtdate.setEnabled(false);
+        txtdue.setEnabled(false);
     }
+    
+        Connection con;
+        PreparedStatement pst;
+        PreparedStatement pst1;
+        ResultSet rs;
+        
+        public void LoadMovie() {
+            
+            try {
+                    Connection con=ConnectionProvider.getCon();
+                    pst = con.prepareStatement("select * from movies");
+                    ResultSet rs = pst.executeQuery();
+                    moviebox.removeAllItems();
+                    
+                    while(rs.next())
+                    {
+                        moviebox.addItem(rs.getString(2));
+                    }
+                            
+                            
+            } catch (Exception e) {
+            }
+        }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -35,15 +69,21 @@ public class RentMovie extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        txtuserid = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
-        jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        txtdate = new com.toedter.calendar.JDateChooser();
+        txtdue = new com.toedter.calendar.JDateChooser();
+        jLabel5 = new javax.swing.JLabel();
+        txtrental = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        moviebox = new javax.swing.JComboBox<>();
+        jLabel7 = new javax.swing.JLabel();
+        txtcustname = new javax.swing.JTextField();
+        txtavail = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Movie ID");
+        jLabel1.setText("Movie Title");
 
         jLabel2.setText("User ID");
 
@@ -58,6 +98,12 @@ public class RentMovie extends javax.swing.JFrame {
             }
         });
 
+        txtuserid.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtuseridKeyPressed(evt);
+            }
+        });
+
         jButton2.setText("Close");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -65,54 +111,91 @@ public class RentMovie extends javax.swing.JFrame {
             }
         });
 
+        jLabel5.setText("Rental Fee");
+
+        jLabel6.setText("AVAILABLE");
+
+        moviebox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                movieboxActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setText("Customer Name");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(50, 50, 50)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel5))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField1)
-                    .addComponent(jTextField2)
+                    .addComponent(txtuserid)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
                         .addComponent(jButton2))
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jDateChooser2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(107, Short.MAX_VALUE))
+                    .addComponent(txtdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtdue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtrental)
+                    .addComponent(moviebox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtcustname))
+                .addGap(74, 74, 74)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(txtavail, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(77, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(52, 52, 52)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(30, 30, 30)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtavail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(moviebox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel3))
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtuserid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtrental, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))
+                        .addGap(18, 18, 18)
+                        .addComponent(txtdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(txtcustname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(70, 70, 70)
+                        .addComponent(jLabel3)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(txtdue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel4)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addContainerGap(72, Short.MAX_VALUE))
+                .addContainerGap(102, Short.MAX_VALUE))
         );
 
         pack();
@@ -121,16 +204,116 @@ public class RentMovie extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         setVisible(false);
-        new Home().setVisible(true);
+        new Homepage().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        SimpleDateFormat dateFormat=new SimpleDateFormat("dd-MM-yyyy");
-        String movieID=jTextField1.getText();
-        String userID=jTextField2.getText();
-        String rentDate=dateFormat.format(jDateChooser1.getDate());
+        
+        try {
+            String Title = moviebox.getSelectedItem().toString();
+            String userID = txtuserid.getText();
+            
+            String fee = txtrental.getText();
+
+            SimpleDateFormat Date_Format = new SimpleDateFormat("yyyy-MM-dd"); 
+            String date = Date_Format.format(txtdate.getDate());
+
+            SimpleDateFormat Date_Format1 = new SimpleDateFormat("yyyy-MM-dd"); 
+            String due = Date_Format.format(txtdue.getDate());
+
+            Connection con=ConnectionProvider.getCon();
+            
+            pst = con.prepareStatement("insert into rentals(Title,userID,Fee,Date,Due)values(?,?,?,?,?)");
+            pst.setString(1, Title);
+            pst.setString(2, userID);
+            pst.setString(3, fee);
+            pst.setString(4, date);
+            pst.setString(5, due);
+            pst.executeUpdate();
+            
+            pst = con.prepareStatement("update movies set Available='No' where Title=?");
+            pst.setString(1, Title);
+            pst.executeUpdate();
+            
+            JOptionPane.showMessageDialog(this, "Success");
+            
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error");
+        }
+        
+        
+        
+        
+        
+        
+        
+        
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void movieboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_movieboxActionPerformed
+        // TODO add your handling code here:
+        
+        String Title = moviebox.getSelectedItem().toString();
+        
+        try {
+            Connection con=ConnectionProvider.getCon();
+            pst1 = con.prepareStatement("select * from movies where Title=?");
+            pst1.setString(1, Title);
+            rs = pst1.executeQuery();
+            
+            if(rs.next()==false)
+            {
+                JOptionPane.showMessageDialog(this,"Movie Not Found");
+            }
+            else
+            {
+                String avail = rs.getString("Available");
+                txtavail.setText(avail.trim());
+                
+                if(avail.equals("Yes"))
+                {
+                    
+                    txtuserid.setEnabled(true);
+                    txtcustname.setEnabled(true);
+                    txtrental.setEnabled(true);
+                    txtdate.setEnabled(true);
+                    txtdue.setEnabled(true);
+                }
+                    
+            }
+                    
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_movieboxActionPerformed
+
+    private void txtuseridKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtuseridKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode()==KeyEvent.VK_ENTER)
+        {
+            String userid = txtuserid.getText();
+            
+            try {
+                Connection con=ConnectionProvider.getCon();
+                
+                pst = con.prepareStatement("select * from users where userid= ?");
+                pst.setString(1, userid);
+                rs = pst.executeQuery();
+                
+                    if(rs.next()==false)
+                {
+                    JOptionPane.showMessageDialog(this,"User ID Not Found");
+                }
+                else
+                    {
+                        String username = rs.getString("FirstName");
+                        txtcustname.setText(username.trim());
+                    }
+            } catch (Exception e) {
+            }
+        }
+    }//GEN-LAST:event_txtuseridKeyPressed
 
     /**
      * @param args the command line arguments
@@ -170,13 +353,19 @@ public class RentMovie extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
-    private com.toedter.calendar.JDateChooser jDateChooser2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JComboBox<String> moviebox;
+    private javax.swing.JTextField txtavail;
+    private javax.swing.JTextField txtcustname;
+    private com.toedter.calendar.JDateChooser txtdate;
+    private com.toedter.calendar.JDateChooser txtdue;
+    private javax.swing.JTextField txtrental;
+    private javax.swing.JTextField txtuserid;
     // End of variables declaration//GEN-END:variables
 }

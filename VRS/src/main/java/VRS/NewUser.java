@@ -3,6 +3,7 @@ package VRS;
 import java.sql.*;
 import Connection.ConnectionProvider;
 import javax.swing.JOptionPane;
+import sun.security.util.Password;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -130,10 +131,15 @@ public class NewUser extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         String UserID=jTextField1.getText();
+        String Password=jTextField2.getText();
+        String FirstName=jTextField3.getText();
+        String LastName=jTextField4.getText();
+        String Email=jTextField5.getText();
         try {
             Connection con=ConnectionProvider.getCon();
             Statement st=con.createStatement();
-            st.executeUpdate("insert into users values('"+UserID+"')");
+            //('"+movieID+"','"+title+"','"+genre+"','"+director+"','"+rating+"')
+            st.executeUpdate("insert into users values('"+UserID+"','"+Password +"','"+FirstName +"','"+LastName +"','"+Email +"')");
             JOptionPane.showMessageDialog(null,"Successfully updated");
             setVisible(false);
             new NewUser().setVisible(true);
@@ -147,7 +153,7 @@ public class NewUser extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         setVisible(false);
-        new Home().setVisible(true);
+        new Homepage().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
